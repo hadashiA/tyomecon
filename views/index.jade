@@ -1,0 +1,52 @@
+extends layout
+
+div(style='width:100%; text-align:center')
+  img#tyome(src='/images/tyome.png')
+
+script(src='/javascripts/jquery.min.js')
+script(src='/javascripts/jquery.rotate.min.js')
+script(src='/javascripts/raphael.min.js')
+script(src='/javascripts/jquery-ui-1.8.16.draggable.min.js')
+!= socketIOIncludeTag(settings['socket.io']['host'])
+
+script(type='text/javascript')
+  $(function() {
+    var tyome = $('#tyome'),
+        defaultLeft = parseInt(tyome.offset().left),
+        socket = io.connect(socketIOUrl + '/tyomecon');
+
+
+    socket.on('move', function(pos) {
+      var angle = (parseInt(pos.left) - defaultLeft);
+      tyome.css(pos).rotate(angle);
+    });
+
+    tyome.draggable({
+      drag: function(event, ui) {
+        var pos  = ui.position,
+            left = pos.left,
+            angle = (left - defaultLeft);
+            
+        tyome.rotate(angle);
+        socket.json.emit('accelerate', ui.position);
+      }
+    });
+
+    // iPhone
+    window.addEventListener("devicemotion", function(event) {
+      var gravity = event.accelerationIncludingGravity,
+          left    = parseInt(tyome.css('left')) || 0,
+          top     = parseInt(tyome.css('top')) || 0,
+          angle = (left - defaultLeft);
+
+      left += gravity.x;
+
+      cssPos = {
+        left: left + 'px',
+        top:  top  + 'px'
+      };
+
+      tyome.css(cssPos).rotate(angle);
+      socket.json.emit('accelerate', cssPos);
+    });
+  });
