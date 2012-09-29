@@ -8,12 +8,12 @@ block content
     $(function() {
       var tyome = $('#tyome'),
           defaultLeft = parseInt(tyome.offset().left);
-          // socket = io.connect(socketIOUrl + '/tyomecon');
+          socket = io.connect('192.168.100.102');
   
-      // socket.on('move', function(pos) {
-      //   var angle = (parseInt(pos.left) - defaultLeft);
-      //   tyome.css(pos).rotate(angle);
-      // });
+      socket.on('move', function(pos) {
+        var angle = (parseInt(pos.left) - defaultLeft);
+        tyome.css(pos).rotate(angle);
+      });
   
       tyome.draggable({
         drag: function(event, ui) {
@@ -22,7 +22,7 @@ block content
               angle = (left - defaultLeft);
               
           tyome.rotate(angle);
-          // socket.json.emit('accelerate', ui.position);
+          socket.json.emit('accelerate', ui.position);
         }
       });
   
@@ -40,7 +40,7 @@ block content
           top:  top  + 'px'
         };
   
-        //tyome.css(cssPos).rotate(angle);
-        // socket.json.emit('accelerate', cssPos);
+        tyome.css(cssPos).rotate(angle);
+        socket.json.emit('accelerate', cssPos);
       });
     });
