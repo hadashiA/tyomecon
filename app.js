@@ -12,9 +12,12 @@ var app = express()
   , server = http.createServer(app)
   , io  = require('socket.io').listen(server);
 
+io.set('log level', 1);
+
 io.sockets.on('connection', function(socket) {
   socket.on('accelerate', function(accel) {
-    socket.broadcast.volatile.json.emit('move', accel);
+    // socket.broadcast.volatile.json.emit('move', accel);
+    socket.broadcast.json.emit('move', accel);
   });
 });
 

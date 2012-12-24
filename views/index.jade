@@ -27,20 +27,24 @@ block content
       });
   
       // iPhone
-      window.addEventListener("devicemotion", function(event) {
-        var gravity = event.accelerationIncludingGravity,
-            left    = parseInt(tyome.css('left')) || 0,
-            top     = parseInt(tyome.css('top')) || 0,
-            angle = (left - defaultLeft);
-  
-        left += gravity.x;
-  
-        cssPos = {
-          left: left + 'px',
-          top:  top  + 'px'
-        };
-  
-        tyome.css(cssPos).rotate(angle);
-        socket.json.emit('accelerate', cssPos);
-      });
+      if (navigator.userAgent.indexOf('iPhone') > 0) {
+        window.addEventListener("devicemotion", function(event) {
+          // if (!event.acceleration) return;
+        
+          var gravity = event.accelerationIncludingGravity,
+              left    = parseInt(tyome.css('left')) || 0,
+              top     = parseInt(tyome.css('top')) || 0,
+              angle = (left - defaultLeft);
+        
+          left += gravity.x;
+        
+          cssPos = {
+            left: left + 'px',
+            top:  top  + 'px'
+          };
+        
+          tyome.css(cssPos).rotate(angle);
+          socket.json.emit('accelerate', cssPos);
+        });
+      }
     });
